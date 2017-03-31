@@ -11,6 +11,7 @@ class Capture:
     def __init__(self, config, path_maker):
         self.camera = PiCamera()
         self.camera.resolution = (int(config["width"]), int(config["height"]))
+        self.camera.meter_mode = "backlit"
         self.config = config
         self.path_maker = path_maker
 
@@ -27,6 +28,7 @@ class Capture:
         for ev in evs:
             name = "slice_"+base_name + "_" + str(ev)+ ".jpg"
             self.camera.capture(name)
+            time.sleep(0.5)
             names.append(name)
         self.camera.stop_preview()
 
@@ -42,6 +44,9 @@ class Capture:
         return (names, (end-start))
 
 if __name__ == "__main__":
+    # loop forever, as quickly as possible (note, this is one file every 58 seconds on a Pi Zero)
     capture = Capture(config, PathMaker())
-    files = capture.take()
-    print("Duration: " + str(files[1]) + "s")
+    while(True):
+        files = capture.take()
+        print("Duration: " + str(files[1]) + "s")
+        time.sleep(1)
